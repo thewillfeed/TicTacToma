@@ -15,6 +15,10 @@ public class Player {
         return spareSpottingMark;
     }
 
+    public String getPlayerName() {
+        return playerName;
+    }
+
     public Player(String name, Character spottingMark, Character spareSpottingMark){
         playerName = name;
         this.spottingMark = spottingMark;

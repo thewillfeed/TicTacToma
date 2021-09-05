@@ -8,7 +8,7 @@ public class TheGame {
     boolean isFirstPlayerTurn;  //Так как игра предназначена для двух игроков,
     boolean isPlayingVersusBot; //в данном контексте не вижу смысла усложнять систему и делать все через массив ходов, когда можно обойтись одним bool
     String[][] field;//
-    int[][] detectionField;
+    int[][] detectionField;//Maybe I should pass it to some Methods
     int fieldSize; //возможно это можно занести в методы
 
     void InitializeGame(int fieldSize, boolean isPlayingVersusBot){
@@ -22,11 +22,12 @@ public class TheGame {
 //        rowSize = 3;
 //    }
 
-    void FillTheField(String[][] field){
+    void FillTheField(String[][] field,int[][]detectionField){
         int fieldSize =  field.length;
         for(int i = 0; i<fieldSize;i++){
             for(int g = 0; g<fieldSize;g++){
                 field[i][g]="-";
+                detectionField[i][g]=0;
             }
         }
     }
@@ -35,7 +36,7 @@ public class TheGame {
         field = new String[Size][Size];
         detectionField = new int[Size][Size];  //Detection array to make it possible to detect win
         fieldSize = Size;
-        FillTheField(field);
+        FillTheField(field,detectionField);
     }
 
     public void StartTheGame(Player playerOne, Player playerTwo){     //standard rules applied atm
@@ -48,19 +49,80 @@ public class TheGame {
     }
 
     void TurnSequence(Player player){
-        while(true){        //main gameplay block
+        //main gameplay block
             int[] input = ScanInput(playerNum);  //Scanning for player input
             if(input==null)return;  //stopping if encountered error  //TODO:Ход надо вынести в отдельный список
             MarkTheSpot(input,player); //Если мы пересоздаем объекты, то не сможем изменять статистику изначальных
+            GiveTurnToAnotherPlayer();
+    }
+
+    @SuppressWarnings("DuplicatedCode")
+    void WinConditionCheck(int[][] conditionArray, int fieldSize, Player player){
+
+        int temp = 0;
+
+        for(int i = 0; i<fieldSize;i++){
+            temp = 0;
+            for(int g = 0; g<fieldSize;g++){    //проверяем строки
+                temp+=conditionArray[i][g];
+            }
+            if(Math.abs(temp)==fieldSize) {
+                DeclareWinner(player);
+                return;
+            }
+        }
+
+        for(int i = 0; i<fieldSize;i++){
+            temp = 0;
+            for(int g = 0; g<fieldSize;g++){    //проверяем столбцы
+                temp+=conditionArray[g][i];
+            }
+            if(Math.abs(temp)==fieldSize) {
+                DeclareWinner(player);
+                return;
+            }
+        }
+
+        temp = 0;
+        for(int i = 0; i< fieldSize;i++){       //проверяем первую диагональ
+            temp+=conditionArray[i][i];
+        }
+        if(Math.abs(temp)==fieldSize) {
+            DeclareWinner(player);
+            return;
+        }
+
+        temp = 0;
+        for(int i = 0; i< fieldSize;i++){       //проверяем вторую диагональ
+            temp+=conditionArray[fieldSize - i][i];
+        }
+        if(Math.abs(temp)==fieldSize) {
+            DeclareWinner(player);
+            return;
         }
     }
 
+    void DeclareWinner(Player player){
+        System.out.println(player.getPlayerName()+" wins!");
+    }
 
-    void MarkTheSpot(int[] inputArr,Player markingPlayer){
+
+    void GiveTurnToAnotherPlayer(){   //Это не очень вариант, потому что он использует глобальную переменную
+        if(isFirstPlayerTurn) {
+            isFirstPlayerTurn = false;
+            playerNum = 2;
+        }
+        else {
+            isFirstPlayerTurn = true;
+            playerNum = 1;
+        }
+    }
+
+    void MarkTheSpot(int[] inputArr,Player markingPlayer){  //TODO Играбельный билд должен быть уже завтра
         if(field[inputArr[0]][inputArr[1]].equals('-'))
         field[inputArr[0]][inputArr[1]] = markingPlayer.getSpottingMark().toString(); //Чтобы правильно получать нужную метку
         if(isFirstPlayerTurn) detectionField[inputArr[0]][inputArr[1]] = -1;
-        else detectionField[inputArr[0]][inputArr[1]] = 1; //каждый раз возмонжо придется создавать новых игроков вначале матча и давать им метки
+        else detectionField[inputArr[0]][inputArr[1]] = 1; //каждый раз возможно придется создавать новых игроков вначале матча и давать им метки
     }
 
     int[] ScanInput(int currentPlayer){
