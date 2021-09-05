@@ -53,11 +53,12 @@ public class TheGame {
             int[] input = ScanInput(playerNum);  //Scanning for player input
             if(input==null)return;  //stopping if encountered error  //TODO:Ход надо вынести в отдельный список
             MarkTheSpot(input,player); //Если мы пересоздаем объекты, то не сможем изменять статистику изначальных
-            GiveTurnToAnotherPlayer();
+            boolean hasGameEnded = WinConditionCheck(detectionField,fieldSize,player);
+            if(!hasGameEnded) GiveTurnToAnotherPlayer();     //Gotta somehow end the game Return true?
     }
 
     @SuppressWarnings("DuplicatedCode")
-    void WinConditionCheck(int[][] conditionArray, int fieldSize, Player player){
+    boolean WinConditionCheck(int[][] conditionArray, int fieldSize, Player player){
 
         int temp = 0;
 
@@ -68,7 +69,7 @@ public class TheGame {
             }
             if(Math.abs(temp)==fieldSize) {
                 DeclareWinner(player);
-                return;
+                return true;
             }
         }
 
@@ -79,7 +80,7 @@ public class TheGame {
             }
             if(Math.abs(temp)==fieldSize) {
                 DeclareWinner(player);
-                return;
+                return true;
             }
         }
 
@@ -89,7 +90,7 @@ public class TheGame {
         }
         if(Math.abs(temp)==fieldSize) {
             DeclareWinner(player);
-            return;
+            return true;
         }
 
         temp = 0;
@@ -98,8 +99,9 @@ public class TheGame {
         }
         if(Math.abs(temp)==fieldSize) {
             DeclareWinner(player);
-            return;
+            return true;
         }
+        return false;
     }
 
     void DeclareWinner(Player player){
