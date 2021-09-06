@@ -25,9 +25,9 @@ public class TheGame {
     void FillTheField(String[][] field,int[][]detectionField){
         int fieldSize =  field.length;
         for(int i = 0; i<fieldSize;i++){
-            for(int g = 0; g<fieldSize;g++){
+            for(int g = 0; g<fieldSize;g++){  //TODO Вычитать -1 из инпута
                 field[i][g]="-";
-                detectionField[i][g]=0;
+                detectionField[i][g]=0;     //TODO инпут пока что не работает
             }
         }
     }
@@ -40,26 +40,27 @@ public class TheGame {
     }
 
     public void StartTheGame(Player playerOne, Player playerTwo){     //standard rules applied atm
+        boolean hasGameEnded = false;
         InitializeGame(3,false);
-        while(true){        //main gameplay block
+        while(!hasGameEnded){        //main gameplay block
             DrawField(field); //Drawing out a field
-            if(isFirstPlayerTurn) TurnSequence(playerOne);  //Choosing who to play
-            else TurnSequence(playerTwo);
+            if(isFirstPlayerTurn) hasGameEnded = TurnSequence(playerOne);  //Choosing who to play
+            else hasGameEnded = TurnSequence(playerTwo);
         }
     }
 
-    void TurnSequence(Player player){
+    boolean TurnSequence(Player player){
         //main gameplay block
             int[] input = ScanInput(playerNum);  //Scanning for player input
-            if(input==null)return;  //stopping if encountered error  //TODO:Ход надо вынести в отдельный список
+            if(input==null)return true;  //stopping if encountered error  //TODO:Ход надо вынести в отдельный список
             MarkTheSpot(input,player); //Если мы пересоздаем объекты, то не сможем изменять статистику изначальных
             boolean hasGameEnded = WinConditionCheck(detectionField,fieldSize,player);
-            if(!hasGameEnded) GiveTurnToAnotherPlayer();     //Gotta somehow end the game Return true?
+            if(!hasGameEnded) GiveTurnToAnotherPlayer();     //Gotta somehow end the game .Return true?
+            return hasGameEnded;
     }
 
     @SuppressWarnings("DuplicatedCode")
     boolean WinConditionCheck(int[][] conditionArray, int fieldSize, Player player){
-
         int temp = 0;
 
         for(int i = 0; i<fieldSize;i++){
@@ -95,12 +96,13 @@ public class TheGame {
 
         temp = 0;
         for(int i = 0; i< fieldSize;i++){       //проверяем вторую диагональ
-            temp+=conditionArray[fieldSize - i][i];
+            temp+=conditionArray[fieldSize - i - 11 ][i];
         }
         if(Math.abs(temp)==fieldSize) {
             DeclareWinner(player);
             return true;
         }
+
         return false;
     }
 
