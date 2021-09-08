@@ -47,6 +47,7 @@ public class TheGame {
             if(isFirstPlayerTurn) hasGameEnded = TurnSequence(playerOne);  //Choosing who to play
             else hasGameEnded = TurnSequence(playerTwo);
         }
+
     }
 
     boolean TurnSequence(Player player){
@@ -56,6 +57,10 @@ public class TheGame {
             MarkTheSpot(input,player); //Если мы пересоздаем объекты, то не сможем изменять статистику изначальных
             boolean hasGameEnded = WinConditionCheck(detectionField,fieldSize,player);
             if(!hasGameEnded) GiveTurnToAnotherPlayer();     //Gotta somehow end the game .Return true?
+            if(hasGameEnded) {
+                DrawField(field);
+                DeclareWinner(player); //shit way
+            }
             return hasGameEnded;
     }
 
@@ -69,7 +74,7 @@ public class TheGame {
                 temp+=conditionArray[i][g];
             }
             if(Math.abs(temp)==fieldSize) {
-                DeclareWinner(player);
+                //DeclareWinner(player); ??? IDK if I should really keep it here
                 return true;
             }
         }
@@ -80,7 +85,7 @@ public class TheGame {
                 temp+=conditionArray[g][i];
             }
             if(Math.abs(temp)==fieldSize) {
-                DeclareWinner(player);
+                //DeclareWinner(player);
                 return true;
             }
         }
@@ -90,16 +95,16 @@ public class TheGame {
             temp+=conditionArray[i][i];
         }
         if(Math.abs(temp)==fieldSize) {
-            DeclareWinner(player);
+            //DeclareWinner(player);
             return true;
         }
 
         temp = 0;
         for(int i = 0; i< fieldSize;i++){       //проверяем вторую диагональ
-            temp+=conditionArray[fieldSize - i - 11 ][i];
+            temp+=conditionArray[fieldSize - i - 1  ][i];
         }
         if(Math.abs(temp)==fieldSize) {
-            DeclareWinner(player);
+            //DeclareWinner(player);
             return true;
         }
 
@@ -123,7 +128,7 @@ public class TheGame {
     }
 
     void MarkTheSpot(int[] inputArr,Player markingPlayer){  //TODO Играбельный билд должен быть уже завтра
-        if(field[inputArr[0]][inputArr[1]].equals('-'))
+        if(field[inputArr[0]][inputArr[1]].equals("-"))
         field[inputArr[0]][inputArr[1]] = markingPlayer.getSpottingMark().toString(); //Чтобы правильно получать нужную метку
         if(isFirstPlayerTurn) detectionField[inputArr[0]][inputArr[1]] = -1;
         else detectionField[inputArr[0]][inputArr[1]] = 1; //каждый раз возможно придется создавать новых игроков вначале матча и давать им метки
@@ -137,10 +142,12 @@ public class TheGame {
             String input = myScan.nextLine(); //Player input handling
             String[] splittedInp = input.split(" ");
             int[] convertedInp = Arrays.stream(splittedInp).mapToInt(Integer::parseInt).toArray(); //basically converting to int through stream
+            convertedInp[0] = convertedInp[0] - 1; //converting player input to array dimension
+            convertedInp[1] = convertedInp[1] - 1;
             if(input.equals("4 4")){
                 return null;
             }
-            else if(Integer.parseInt(splittedInp[0])<fieldSize && Integer.parseInt(splittedInp[1])<fieldSize){
+            else if(Integer.parseInt(splittedInp[0])-1<fieldSize && Integer.parseInt(splittedInp[1])-1<fieldSize+1){
                 return convertedInp;
             }
             else{
