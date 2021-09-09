@@ -52,9 +52,13 @@ public class TheGame {
 
     boolean TurnSequence(Player player){
         //main gameplay block
-            int[] input = ScanInput(playerNum);  //Scanning for player input
-            if(input==null)return true;  //stopping if encountered error  //TODO:Ход надо вынести в отдельный список
-            MarkTheSpot(input,player); //Если мы пересоздаем объекты, то не сможем изменять статистику изначальных
+            boolean markPassed = false;
+            while (!markPassed){
+                int[] input = ScanInput(playerNum);  //Scanning for player input
+                if(input==null)return true;  //stopping if encountered error  //TODO:Ход надо вынести в отдельный список
+                markPassed = MarkTheSpot(input,player); //Если мы пересоздаем объекты, то не сможем изменять статистику изначальных //
+                if(!markPassed) System.out.println("Point is already taken, pick another one");
+            }
             boolean hasGameEnded = WinConditionCheck(detectionField,fieldSize,player);
             if(!hasGameEnded) GiveTurnToAnotherPlayer();     //Gotta somehow end the game .Return true?
             if(hasGameEnded) {
@@ -73,10 +77,7 @@ public class TheGame {
             for(int g = 0; g<fieldSize;g++){    //проверяем строки
                 temp+=conditionArray[i][g];
             }
-            if(Math.abs(temp)==fieldSize) {
-                //DeclareWinner(player); ??? IDK if I should really keep it here
-                return true;
-            }
+            if(Math.abs(temp)==fieldSize) {return true;}
         }
 
         for(int i = 0; i<fieldSize;i++){
@@ -84,29 +85,20 @@ public class TheGame {
             for(int g = 0; g<fieldSize;g++){    //проверяем столбцы
                 temp+=conditionArray[g][i];
             }
-            if(Math.abs(temp)==fieldSize) {
-                //DeclareWinner(player);
-                return true;
-            }
+            if(Math.abs(temp)==fieldSize) {return true;}
         }
 
         temp = 0;
         for(int i = 0; i< fieldSize;i++){       //проверяем первую диагональ
             temp+=conditionArray[i][i];
         }
-        if(Math.abs(temp)==fieldSize) {
-            //DeclareWinner(player);
-            return true;
-        }
+        if(Math.abs(temp)==fieldSize) {return true;}
 
         temp = 0;
         for(int i = 0; i< fieldSize;i++){       //проверяем вторую диагональ
             temp+=conditionArray[fieldSize - i - 1  ][i];
         }
-        if(Math.abs(temp)==fieldSize) {
-            //DeclareWinner(player);
-            return true;
-        }
+        if(Math.abs(temp)==fieldSize) {return true;}
 
         return false;
     }
@@ -127,11 +119,15 @@ public class TheGame {
         }
     }
 
-    void MarkTheSpot(int[] inputArr,Player markingPlayer){  //TODO Играбельный билд должен быть уже завтра
-        if(field[inputArr[0]][inputArr[1]].equals("-"))
-        field[inputArr[0]][inputArr[1]] = markingPlayer.getSpottingMark().toString(); //Чтобы правильно получать нужную метку
-        if(isFirstPlayerTurn) detectionField[inputArr[0]][inputArr[1]] = -1;
-        else detectionField[inputArr[0]][inputArr[1]] = 1; //каждый раз возможно придется создавать новых игроков вначале матча и давать им метки
+    boolean MarkTheSpot(int[] inputArr,Player markingPlayer){  //TODO НУЖНО МЕНЮ СОЗДАНИЯ И ВЫБОРА ИГРОКОВ
+        if(field[inputArr[0]][inputArr[1]].equals("-")) {
+            field[inputArr[0]][inputArr[1]] = markingPlayer.getSpottingMark().toString(); //Чтобы правильно получать нужную метку
+            if(isFirstPlayerTurn) detectionField[inputArr[0]][inputArr[1]] = -1;
+            else detectionField[inputArr[0]][inputArr[1]] = 1; //каждый раз возможно придется создавать новых игроков вначале матча и давать им метки
+            return true;
+        }
+        else
+        return false;
     }
 
     int[] ScanInput(int currentPlayer){
@@ -144,7 +140,7 @@ public class TheGame {
             int[] convertedInp = Arrays.stream(splittedInp).mapToInt(Integer::parseInt).toArray(); //basically converting to int through stream
             convertedInp[0] = convertedInp[0] - 1; //converting player input to array dimension
             convertedInp[1] = convertedInp[1] - 1;
-            if(input.equals("4 4")){
+            if(input.equals("4444")){
                 return null;
             }
             else if(Integer.parseInt(splittedInp[0])-1<fieldSize && Integer.parseInt(splittedInp[1])-1<fieldSize+1){
