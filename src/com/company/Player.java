@@ -19,6 +19,11 @@ public class Player {
         return playerName;
     }
 
+    public void setPlayerName(String newName){
+        playerName = newName;
+    }
+
+
     public Player(String name, Character spottingMark, Character spareSpottingMark){
         playerName = name;
         this.spottingMark = spottingMark;

@@ -54,7 +54,7 @@ public class TheGame {
         //main gameplay block
             boolean markPassed = false;
             while (!markPassed){
-                int[] input = ScanInput(playerNum);  //Scanning for player input
+                int[] input = ScanInput(player);  //Scanning for player input
                 if(input==null)return true;  //stopping if encountered error  //TODO:Ход надо вынести в отдельный список
                 markPassed = MarkTheSpot(input,player); //Если мы пересоздаем объекты, то не сможем изменять статистику изначальных //
                 if(!markPassed) System.out.println("Point is already taken, pick another one");
@@ -130,13 +130,15 @@ public class TheGame {
         return false;
     }
 
-    int[] ScanInput(int currentPlayer){
+    int[] ScanInput(Player player){
         Scanner myScan = new Scanner(System.in);
         while(true){
-            System.out.printf("Player %d, Please choose correct spot to mark%n",currentPlayer);
+            System.out.printf("%s, Please choose correct spot to mark%n",player.getPlayerName());
             System.out.println("Input should look like this: 2 1");
             String input = myScan.nextLine(); //Player input handling
-            String[] splittedInp = input.split(" ");
+            input = input.replaceAll("[\\D.]", " ");
+            System.out.println(input);
+            String[] splittedInp = input.trim().split("(\\D *)");
             int[] convertedInp = Arrays.stream(splittedInp).mapToInt(Integer::parseInt).toArray(); //basically converting to int through stream
             convertedInp[0] = convertedInp[0] - 1; //converting player input to array dimension
             convertedInp[1] = convertedInp[1] - 1;
@@ -167,4 +169,7 @@ public class TheGame {
             System.out.println();
         }
     }
+
+
+
 }
