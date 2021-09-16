@@ -25,9 +25,9 @@ public class TheGame {
     void FillTheField(String[][] field,int[][]detectionField){
         int fieldSize =  field.length;
         for(int i = 0; i<fieldSize;i++){
-            for(int g = 0; g<fieldSize;g++){  //TODO Вычитать -1 из инпута
+            for(int g = 0; g<fieldSize;g++){
                 field[i][g]="-";
-                detectionField[i][g]=0;     //TODO инпут пока что не работает
+                detectionField[i][g]=0;
             }
         }
     }
@@ -58,6 +58,12 @@ public class TheGame {
                 if(input==null)return true;  //stopping if encountered error  //TODO:Ход надо вынести в отдельный список
                 markPassed = MarkTheSpot(input,player); //Если мы пересоздаем объекты, то не сможем изменять статистику изначальных //
                 if(!markPassed) System.out.println("Point is already taken, pick another one");
+            }
+            boolean isTie = CheckForTie(detectionField,fieldSize);
+            if(isTie){
+                DeclareTie();
+                //boolean hasGameEnded = true;
+                return true;  //???? return Bool that game has successfully ended
             }
             boolean hasGameEnded = WinConditionCheck(detectionField,fieldSize,player);
             if(!hasGameEnded) GiveTurnToAnotherPlayer();     //Gotta somehow end the game .Return true?
@@ -107,6 +113,7 @@ public class TheGame {
         System.out.println(player.getPlayerName()+" wins!");
     }
 
+    void DeclareTie(){ System.out.println("Tie!");}
 
     void GiveTurnToAnotherPlayer(){   //Это не очень вариант, потому что он использует глобальную переменную
         if(isFirstPlayerTurn) {
@@ -168,6 +175,20 @@ public class TheGame {
             }
             System.out.println();
         }
+    }
+
+    boolean CheckForTie(int[][] conditionArray,int fieldSize){
+        int count = 0;
+        for(int i = 0; i<fieldSize;i++) {
+            for(int j = 0; j<fieldSize;j++){
+                if(conditionArray[i][j]!=0) count++;
+            }
+        }
+        if(count == fieldSize * fieldSize)
+            return  true;
+        else
+            return false;
+
     }
 
 
