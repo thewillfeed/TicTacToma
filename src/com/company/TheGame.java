@@ -5,11 +5,16 @@ import java.util.Scanner;
 public class TheGame {
 
     int playerNum = 1;
+    Player currentPlayer;
     boolean isFirstPlayerTurn;  //Так как игра предназначена для двух игроков,
     boolean isPlayingVersusBot; //в данном контексте не вижу смысла усложнять систему и делать все через массив ходов, когда можно обойтись одним bool
     String[][] field;//
     int[][] detectionField;//Maybe I should pass it to some Methods
     int fieldSize; //возможно это можно занести в методы
+    Player firstPlayer;
+    Player secondPlayer;
+    GameGUI gameGUI;
+
 
     void InitializeGame(int fieldSize, boolean isPlayingVersusBot){
         InitializeField(fieldSize);
@@ -41,13 +46,78 @@ public class TheGame {
 
     public void StartTheGame(Player playerOne, Player playerTwo){     //standard rules applied atm
         boolean hasGameEnded = false;
+        this.firstPlayer = playerOne;
+        this.secondPlayer = playerTwo;
         InitializeGame(3,false);
         while(!hasGameEnded){        //main gameplay block
             DrawField(field); //Drawing out a field
             if(isFirstPlayerTurn) hasGameEnded = TurnSequence(playerOne);  //Choosing who to play
             else hasGameEnded = TurnSequence(playerTwo);
         }
+    }
 
+    public void StartTheGameWithGUI(Player playerOne, Player playerTwo){
+        boolean hasGameEnded = false;
+        this.firstPlayer = playerOne;
+        this.secondPlayer = playerTwo;
+        InitializeGame(3,false);
+        gameGUI = new GameGUI(this,fieldSize);
+    }
+
+    public boolean CheckIfPlotIsFree(int targetX, int targetY){
+        if(field[targetX][targetY].equals("-"))
+            return true;
+        else
+            return false;
+    }
+
+    public String GUIInput(int inputx, int inputy){     //Method returns null if field plot is already taken
+     String spottingMark;
+
+        if(isFirstPlayerTurn){
+            spottingMark = firstPlayer.getSpottingMark().toString();
+            if(field[inputx][inputy]=="-"){
+                currentPlayer = firstPlayer;
+                field[inputx][inputy] = spottingMark;           //TODO Пока нет проверок на перезапись
+                detectionField[inputx][inputy] = -1;
+            }
+            else return null;
+        }
+        else
+        {
+            spottingMark = secondPlayer.getSpottingMark().toString();
+            if(field[inputx][inputy]=="-"){
+                currentPlayer = secondPlayer;
+                field[inputx][inputy] = spottingMark;       //Method requires created gameGUI in class to operate
+                detectionField[inputx][inputy] = 1;
+            }
+        }
+        //CheckForWinGUI(detectionField,fieldSize,currentPlayer);
+        GiveTurnToAnotherPlayer();
+
+        return spottingMark;
+    }
+
+    void CheckForWinGUI(int[][] detectionField, int fieldSize, Player player){
+        if(WinConditionCheck(detectionField,fieldSize)){
+            gameGUI.ShowWinnerWindow(player, this, false);
+            return;
+        }
+        if(CheckForTie(detectionField,fieldSize)){
+            gameGUI.ShowWinnerWindow(player,this, true);
+            return;
+        }
+
+    }
+
+    public void ResetTheGame(){
+        isFirstPlayerTurn = true;
+        InitializeField(fieldSize);
+        gameGUI.ResetGUI();
+    }
+
+    void CheckForWinGUIWrap(){
+        CheckForWinGUI(detectionField,fieldSize,currentPlayer);
     }
 
     boolean TurnSequence(Player player){
@@ -65,17 +135,17 @@ public class TheGame {
                 //boolean hasGameEnded = true;
                 return true;  //???? return Bool that game has successfully ended
             }
-            boolean hasGameEnded = WinConditionCheck(detectionField,fieldSize,player);
+            boolean hasGameEnded = WinConditionCheck(detectionField,fieldSize);
             if(!hasGameEnded) GiveTurnToAnotherPlayer();     //Gotta somehow end the game .Return true?
             if(hasGameEnded) {
                 DrawField(field);
-                DeclareWinner(player); //shit way
+                DeclareWinner(player);
             }
             return hasGameEnded;
     }
 
     @SuppressWarnings("DuplicatedCode")
-    boolean WinConditionCheck(int[][] conditionArray, int fieldSize, Player player){
+    boolean WinConditionCheck(int[][] conditionArray, int fieldSize){
         int temp = 0;
 
         for(int i = 0; i<fieldSize;i++){
