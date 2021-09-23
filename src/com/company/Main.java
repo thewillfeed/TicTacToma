@@ -1,4 +1,6 @@
 package com.company;
+import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.Scanner;
 import javax.swing.*;
 import java.awt.*;
@@ -12,26 +14,46 @@ public class Main {
         Player boyd = new Player("Player 1",'x','y');
         Player raz = new Player("Player 2",'o','z');   //test players
         TheGame theGame = new TheGame();
+        int fieldSize = 3;
+
+        /*
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel buttonPanel = new JPanel();
+        JPanel containerPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(3,3));
+        JButton[][] buttons = new JButton[fieldSize][fieldSize];
+        for(int i = 0; i < fieldSize;i++){
+            for(int j = 0; j < fieldSize; j++){
+                JButton button = new JButton("-");
+                buttons[i][j] = button;
+                int in = i;
+                int ji = j;
+                button.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae) { //TODO надо вызывать action из input a
+                        if(theGame.isFirstPlayerTurn){
+                            button.setText(raz.getSpottingMark().toString());  //
+                            theGame.field[in][ji] = boyd.getSpottingMark().toString();
+                            theGame.detectionField[in][ji] = -1;//Нужен метод, который будет все переставлять
+                                //здеся будет detection field
+                        }
+                        else{
+                            button.setText(boyd.getSpottingMark().toString());
+                        }
+                    }
+                });
+                buttonPanel.add(button);
+            }
 
 
-//        JFrame frame = new JFrame();
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        JPanel buttonPanel = new JPanel();
-//        JPanel containerPanel = new JPanel();
-//        buttonPanel.setLayout(new GridLayout(3,3));
-//        JButton[] buttons = new JButton[9];
-//        for(int i = 0; i<9;i++){
-//            JButton button = new JButton("-");
-//            buttons[i] = button;
-//            buttonPanel.add(button);
-//        }
-//        buttons[4].setText("X");
-//        buttonPanel.setPreferredSize(new Dimension(300, 400));
-//        containerPanel.add(buttonPanel);
-//        frame.getContentPane().add(containerPanel);
-//        frame.pack();
-//        frame.setVisible(true);
+        }
 
+        buttonPanel.setPreferredSize(new Dimension(300, 400));
+        containerPanel.add(buttonPanel);
+        frame.getContentPane().add(containerPanel);
+        frame.pack();
+        frame.setVisible(true);
+        */
 
         while(isGameOn){
             System.out.println("Welcome to the Tic Tac toe.");
